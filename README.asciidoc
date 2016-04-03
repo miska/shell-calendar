@@ -37,3 +37,10 @@ customize the start by exporting `START` variable. Something like this:
 --------------------------------------------------------------------------------
 START="2016-04-01" ./generate-calendar.sh > cal.html
 --------------------------------------------------------------------------------
+
+Localisation
+------------
+
+To generate calendar, script uses `date` command to get names for the months
+and days of the week. So prior running make sure you have correct locale set
+(utf-8 one).
