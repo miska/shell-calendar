@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see http://www.gnu.org/licenses/.
 
-if [ "$START" ]; then
-  NOW="$START"
+if [ "$1" ]; then
+  NOW="$1"
 else
   NOW=$(date --date='next year' +%Y)-01-01
 fi
@@ -33,6 +33,8 @@ get_month() {
 get_day() {
     date --date="$NOW + $PLUS days" +%d
 }
+
+mogrify -auto-orient *.jpg
 
 NOW_Y="`get_year`"
 cat << EOF
@@ -58,25 +60,26 @@ cat << EOF
     h1 {
       text-align: center;
       text-transform: capitalize;
-      padding-top: 1cm;
+      padding-top: 2cm;
       font-size: 1.5cm;
       padding-bottom: 1cm;
       margin: 0px;
     }
     h2 {
       text-align: center;
-      padding-top: 0.5cm;
       font-size: 0.3cm;
       font-style: italic;
       font-weight: normal;
       padding-bottom: 0.5cm;
+      padding-top: 0.5cm;
       margin: 0px;
     }
     .notes { font-size: 0.7em; padding-top: 0; }
     p { margin: 0; }
-    img { padding-left: 10%; width: 80%; height: auto; }
-    table { width: 100%; padding-left: 1.75cm; padding-right: 1.75cm; }
-    td { text-align: center; width: 2.5cm; vertical-align: top; }
+    img { position: relative; left: 50%; transform: translate(-50%); width: auto; height: 12cm; padding-bottom: 0.5cm; }
+    table { width: 100%; padding-left: 1.75cm; padding-right: 1.75cm; padding-top: 0.5cm; }
+    td { text-align: center; font-size: 1.2em; width: 2.5cm; vertical-align: top; }
+    th { font-size: 1em; }
     tr { height: 1.3cm; }
 
     /* Printing specific */
@@ -111,6 +114,14 @@ cat << EOF
   </style>
 </head>
 <body>
+<script>
+function fix_tables() {
+  var tables = document.getElementsByClassName('calendar');
+  for (var i = 0; i < tables.length; i++) {
+    tables[i].style.setProperty('margin-top', "calc(10cm - " + window.getComputedStyle(tables[i], null).getPropertyValue('height') + ")")
+  }
+}
+</script>
 EOF
 
 while [ `get_year` -eq $NOW_Y ]; do
@@ -123,7 +134,7 @@ while [ `get_year` -eq $NOW_Y ]; do
         echo "<h2>$(cat $(date --date="$NOW + $PLUS days" +%m).txt)</h2>"
     fi
     echo ''
-    echo '<table>'
+    echo '<table class="calendar">'
     echo "<tr>"
     for i in Monday Tuesday Wednesday Thursday Friday Saturday Sunday; do
         echo "  <th class='$i'>$(date --date=$i +%A)</th>"
@@ -137,7 +148,7 @@ while [ `get_year` -eq $NOW_Y ]; do
     fi
     while [ `get_month` -eq $NOW_M ]; do
         echo "  <td class='$(LANG=C date --date="$NOW + $PLUS days" +%A)'>"
-        echo "    <p class='date'>$(date --date="$NOW + $PLUS days" +%d)</p>"
+        echo "    <p class='date'>$(date --date="$NOW + $PLUS days" +%_d)</p>"
         DATE_LIST="$(date --date="$NOW + $PLUS days" +%0m-%0d)"
         DATE_LIST_Y="$(date --date="$NOW + $PLUS days" +%y-%0m-%0d)"
         for i in *.list; do
@@ -149,7 +160,8 @@ while [ `get_year` -eq $NOW_Y ]; do
         echo "  </td>"
         if [ $(date --date="$NOW + $PLUS days" +%u) -eq 7 ]; then
             echo "</tr>"
-            echo "<tr>"
+            TMP="`expr $PLUS + 1`"
+            [ $(date --date="$NOW + $PLUS days" +%m) -ne $(date --date="$NOW + $TMP days" +%m) ] || echo "<tr>"
         fi
         PLUS="`expr $PLUS + 1`"
     done
