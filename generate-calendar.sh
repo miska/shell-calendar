@@ -56,6 +56,7 @@ cat << EOF
         margin-bottom: 0.5cm;
         box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
       }
+      body { background: gray; color: black; }
     }
     h1 {
       text-align: center;
@@ -95,12 +96,12 @@ cat << EOF
         border-radius: 0;
         box-shadow: 0;
       }
+      body { background: white; }
     }
   </style>
   <style type="text/css">
     /* Colors */
     .month { background: white; }
-    body { background: gray; color: black; }
     .Sunday { color: red; }
     .Saturday { color: red; }
   </style>
