@@ -30,6 +30,14 @@ get_month() {
     date --date="$NOW + $PLUS days" +%m
 }
 
+get_month_name() {
+    if [ -f months ]; then
+        sed -n "$(date --date="$NOW + $PLUS days" +%m) p" months
+    else
+        date --date="$NOW + $PLUS days" +%B
+    fi
+}
+
 get_day() {
     date --date="$NOW + $PLUS days" +%d
 }
@@ -128,9 +136,9 @@ EOF
 while [ `get_year` -eq $NOW_Y ]; do
     NOW_M="`get_month`"
     echo '<div class="month">'
-    echo "<h1>$(date --date="$NOW + $PLUS days" +%B) ${NOW_Y}</h1>"
+    echo "<h1>$(get_month_name "$NOW + $PLUS days") ${NOW_Y}</h1>"
     echo ''
-    echo "<img alt='$(date --date="$NOW + $PLUS days" +%B) ${NOW_Y}' src='$(date --date="$NOW + $PLUS days" +%m).jpg'/>"
+    echo "<img alt='$(get_month_name "$NOW + $PLUS days") ${NOW_Y}' src='$(date --date="$NOW + $PLUS days" +%m).jpg'/>"
     if [ -f "$(date --date="$NOW + $PLUS days" +%m).txt" ]; then
         echo "<h2>$(cat $(date --date="$NOW + $PLUS days" +%m).txt)</h2>"
     fi
